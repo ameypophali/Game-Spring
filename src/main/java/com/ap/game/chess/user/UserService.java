@@ -1,14 +1,11 @@
 package com.ap.game.chess.user;
 
-import com.ap.game.chess.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Service
-public class UserService {
-
-    @Autowired
-    private UserRepository repository;
-
-
+public interface UserService {
+    User create(UserRequestBody user) throws Exception;
+    List<User> findAll();
+    void deleteUser(long id);
+    User findUserByEmail(String email);
+    User findById(Long id);
 }

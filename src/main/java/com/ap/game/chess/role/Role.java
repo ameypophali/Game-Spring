@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Role {
 
     @Id
@@ -23,10 +25,9 @@ public class Role {
 
     @NotNull
     @Column(name="Role",unique = true)
-    private String role;
+    private String title;
 
     @NonNull
-    @Column(name="Created",unique = true)
+    @Column(name="Created")
     private Timestamp created;
-
 }

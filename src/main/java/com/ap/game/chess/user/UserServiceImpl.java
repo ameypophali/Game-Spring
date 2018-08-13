@@ -1,10 +1,11 @@
 package com.ap.game.chess.user;
 
-import com.ap.game.chess.exception.user.UserAlreadyExists;
-import com.ap.game.chess.exception.user.UserNotFoundException;
-import com.ap.game.chess.role.RoleService;
+import com.ap.game.chess.user.exception.UserAlreadyExists;
+import com.ap.game.chess.user.exception.UserNotFoundException;
+import com.ap.game.chess.role.Role;
+import com.ap.game.chess.role.RoleRequestBody;
+import com.ap.game.chess.role.RoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,21 +19,21 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
 
     @Autowired
-    private RoleService roleService;
+    private RoleServiceImpl roleServiceImpl;
 
 /*    @Autowired
-    private BCryptPasswordEncoder bcryptEncoder;*/
+    private PasswordEncoder passwordEncoder;*/
 
     @Override
     public User create(UserRequestBody userRequestBody) {
-        User presentUser = findUserByEmail(userRequestBody.getEmail());
-        if(presentUser!=null) {
+        Optional<User> exisitingUser = userRepository.findByEmail(userRequestBody.getEmail());
+        if(exisitingUser.isPresent()) {
             throw new UserAlreadyExists("User with email '" + userRequestBody.getEmail() +
                                     "' already exists");
         }
         User user = User.builder()
                 .email(userRequestBody.getEmail())
-                //.password(bcryptEncoder.encode(userRequestBody.getPassword()))
+                //.password(passwordEncoder.encode(userRequestBody.getPassword()))
                 .password(userRequestBody.getPassword())
                 .firstName(userRequestBody.getFirstName())
                 .lastName(userRequestBody.getLastName())
@@ -42,7 +43,8 @@ public class UserServiceImpl implements UserService{
     }
 
     private void assignRole(User user, String roleTitle) {
-        user.assignRole(roleService.getRoleByTitle(roleTitle));
+        Role role = roleServiceImpl.findRoleByTitle(roleTitle);
+        user.assignRole(role);
     }
 
     @Override
@@ -73,6 +75,14 @@ public class UserServiceImpl implements UserService{
             throw new UserNotFoundException("User with userId " + id + " does not exist");
         }
         return user.get();
+    }
+
+    @Override
+    public void assignRole(Long userId, RoleRequestBody requestBody) {
+        User user = findById(userId);
+        Role role = roleServiceImpl.findRoleByTitle(requestBody.getRoleTitle());
+        user.assignRole(role);
+        userRepository.save(user);
     }
 
 }

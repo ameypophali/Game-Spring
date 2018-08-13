@@ -1,7 +1,7 @@
-package com.ap.game.chess.exception.user;
+package com.ap.game.chess.user.exception;
 
 public class UserException extends RuntimeException {
-    public UserException(String message){
+    UserException(String message){
         super(message);
     }
 }

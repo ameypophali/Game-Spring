@@ -1,23 +1,26 @@
 package com.ap.game.chess.user;
 
-import com.ap.game.chess.exception.user.UserAlreadyHasRoleException;
-import com.ap.game.chess.exception.user.UserDoesNotHaveRole;
+import com.ap.game.chess.user.exception.UserAlreadyHasRoleException;
+import com.ap.game.chess.user.exception.UserDoesNotHaveRole;
 import com.ap.game.chess.role.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 //import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+@Data
 @Entity
 @Table(name="User")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 public class User {
 
     @Builder
@@ -49,24 +52,25 @@ public class User {
 
     @NotNull
     @Column(name="Password")
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "USER_ROLE",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
 /*    private void hashAndSavePassword(String password) {
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }*/
 
-    public void assignRole(Role role){
+    void assignRole(Role role){
         if(this.roles.contains(role)){
             throw new UserAlreadyHasRoleException(this.firstName +
-                    " already has role of a " + role.getTitle());
+                    " already has role of " + role.getTitle());
         }
-        roles.add(role);
+        this.getRoles().add(role);
     }
 
     public void unassignRole(Role removeRole){

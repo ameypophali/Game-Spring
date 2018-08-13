@@ -1,9 +1,9 @@
 package com.ap.game.chess.user;
 
+import com.ap.game.chess.role.RoleRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<User> createUser(@RequestBody UserRequestBody userRequestBody) throws Exception {
@@ -27,7 +27,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<User> getUsers(@PathVariable String email){
         return new ResponseEntity<>(userService.findUserByEmail(email), HttpStatus.OK);
     }
@@ -35,5 +35,11 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUser(@PathVariable long userId){
         return new ResponseEntity<>(userService.findById(userId), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/assignrole")
+    public void assignRoleToUser(@PathVariable(value = "id") Long userId,
+                                 @RequestBody RoleRequestBody requestBody){
+        userService.assignRole(userId, requestBody);
     }
 }

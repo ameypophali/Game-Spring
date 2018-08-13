@@ -1,4 +1,4 @@
-package com.ap.game.chess.exception.role;
+package com.ap.game.chess.role.exception;
 
 public class RoleException extends RuntimeException {
     public RoleException(String message){

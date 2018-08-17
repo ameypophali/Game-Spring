@@ -6,6 +6,7 @@ import com.ap.game.chess.role.Role;
 import com.ap.game.chess.role.RoleRequestBody;
 import com.ap.game.chess.role.RoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,8 +22,8 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private RoleServiceImpl roleServiceImpl;
 
-/*    @Autowired
-    private PasswordEncoder passwordEncoder;*/
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public User create(UserRequestBody userRequestBody) {
@@ -33,8 +34,8 @@ public class UserServiceImpl implements UserService{
         }
         User user = User.builder()
                 .email(userRequestBody.getEmail())
-                //.password(passwordEncoder.encode(userRequestBody.getPassword()))
-                .password(userRequestBody.getPassword())
+                .password(passwordEncoder.encode(userRequestBody.getPassword()))
+                //.password(userRequestBody.getPassword())
                 .firstName(userRequestBody.getFirstName())
                 .lastName(userRequestBody.getLastName())
                 .build();

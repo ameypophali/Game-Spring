@@ -1,16 +1,18 @@
 package com.ap.game.chess.user;
 
+import com.ap.game.chess.game.model.Participant;
 import com.ap.game.chess.user.exception.UserAlreadyHasRoleException;
 import com.ap.game.chess.user.exception.UserDoesNotHaveRole;
 import com.ap.game.chess.role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-//import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -28,7 +30,6 @@ public class User {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        //hashAndSavePassword(password);
         this.password = password;
     }
 
@@ -61,9 +62,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private List<Role> roles = new ArrayList<>();
 
-/*    private void hashAndSavePassword(String password) {
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
-    }*/
+    @OneToMany(mappedBy = "user")
+    Set<Participant> participations = new HashSet<>();
 
     void assignRole(Role role){
         if(this.roles.contains(role)){
@@ -76,10 +76,10 @@ public class User {
     public void unassignRole(Role removeRole){
         Role presentRole =
                 this.roles
-                .stream()
-                .filter(r -> r.getRoleId().equals(removeRole.getRoleId()))
-                .findFirst()
-                .orElse(null);
+                        .stream()
+                        .filter(r -> r.getRoleId().equals(removeRole.getRoleId()))
+                        .findFirst()
+                        .orElse(null);
         if(presentRole == null){
             throw new UserDoesNotHaveRole(this.firstName +
                     " does not have a role of " + removeRole.getTitle());

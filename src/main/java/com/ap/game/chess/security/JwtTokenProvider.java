@@ -1,5 +1,6 @@
 package com.ap.game.chess.security;
 
+import com.ap.game.chess.authentication.JwtAuthenticationResponse;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,9 @@ public class JwtTokenProvider {
     private String jwtSecret;
 
     @Value("${app.jwtExpirationInMs}")
-    private int jwtExpirationInMs;
+    private long jwtExpirationInMs;
 
-    public String generatetoken(Authentication authentication){
+    public JwtAuthenticationResponse generatetoken(Authentication authentication){
         AppUser user = (AppUser) authentication.getPrincipal();
         Claims claims = Jwts.claims().setSubject(user.getUsername());
         claims.put("roles", user.getAuthorities());
@@ -28,12 +29,12 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-        return Jwts.builder()
+        return new JwtAuthenticationResponse(Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
+                .compact(), jwtExpirationInMs/1000);
     }
 
     boolean validateToken(String authToken) {

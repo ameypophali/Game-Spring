@@ -21,18 +21,21 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    @Autowired
+
     private UserService userService;
-
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    public AuthController(UserService userService, AuthenticationManager authenticationManager,
+                            JwtTokenProvider tokenProvider) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.tokenProvider = tokenProvider;
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<User>
-    registerUser(@Valid @RequestBody UserRequestBody userRequestBody) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody UserRequestBody userRequestBody) {
         User user = userService.create(userRequestBody);
         if (user == null) new ResponseEntity<>(HttpStatus.CONFLICT);
         return new ResponseEntity<>(user, HttpStatus.CREATED);

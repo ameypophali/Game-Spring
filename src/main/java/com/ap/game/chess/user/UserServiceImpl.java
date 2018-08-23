@@ -16,14 +16,17 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService{
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private RoleServiceImpl roleServiceImpl;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, RoleServiceImpl roleServiceImpl
+                            ,PasswordEncoder passwordEncoder){
+        this.userRepository = userRepository;
+        this.roleServiceImpl = roleServiceImpl;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public User create(UserRequestBody userRequestBody) {
@@ -33,7 +36,7 @@ public class UserServiceImpl implements UserService{
                                     "' already exists");
         }
         User user = User.builder()
-                .email(userRequestBody.getEmail())
+                .email(userRequestBody.getEmail().toLowerCase())
                 .password(passwordEncoder.encode(userRequestBody.getPassword()))
                 //.password(userRequestBody.getPassword())
                 .firstName(userRequestBody.getFirstName())

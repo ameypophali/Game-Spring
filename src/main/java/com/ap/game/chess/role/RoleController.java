@@ -12,8 +12,12 @@ import java.util.List;
 @RequestMapping("/roles")
 public class RoleController {
 
-    @Autowired
     private RoleService roleService;
+
+    @Autowired
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @PostMapping()
     @Secured("ROLE_ADMIN")

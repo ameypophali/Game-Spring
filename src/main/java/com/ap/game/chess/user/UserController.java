@@ -14,14 +14,11 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody UserRequestBody userRequestBody) throws Exception {
-        User user = userService.create(userRequestBody);
-        if(user==null) new ResponseEntity<>(HttpStatus.CONFLICT);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    @Autowired
+    public UserController(UserService userService){
+        this.userService = userService;
     }
 
     @GetMapping("/users")
@@ -31,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    @PreAuthorize("#email == authentication.principal.username")
+    @PreAuthorize("#email == authentication.principal.username.toLowerCase()")
     public ResponseEntity<User> getUsers(@PathVariable String email){
         return new ResponseEntity<>(userService.findUserByEmail(email), HttpStatus.OK);
     }

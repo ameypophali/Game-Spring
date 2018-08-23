@@ -37,7 +37,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserRequestBody userRequestBody) {
         User user = userService.create(userRequestBody);
-        if (user == null) new ResponseEntity<>(HttpStatus.CONFLICT);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
